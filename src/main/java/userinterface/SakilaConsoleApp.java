@@ -15,6 +15,10 @@ public class SakilaConsoleApp {
 
     private DataManager dm;
 
+    public SakilaConsoleApp(DataManager dm) {
+        this.dm = dm;
+    }
+
     public void start() {
         String prompt = """
                 Please select from one of the following:
@@ -22,7 +26,7 @@ public class SakilaConsoleApp {
                    2) List all Films
                    3) List Films by Category
                    0) Quit
-                Command""";
+                Command: """;
 
         int choice = -1;
         while (choice != 0) {

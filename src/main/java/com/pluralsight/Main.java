@@ -1,9 +1,11 @@
 package com.pluralsight;
 
 import com.mysql.cj.protocol.Resultset;
-import models.Category;
+import models.*;
 import org.apache.commons.dbcp2.BasicDataSource;
 import userinterface.ConsoleHelper;
+import persistance.*;
+import userinterface.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,15 +19,21 @@ public class Main {
 
     public static void main(String[] args) throws SQLException {
 
-        if(args.length < 3){
-            System.out.println("You need to provide a username, password and URL when running this command.");
-            System.out.println("For example:");
-            System.out.println("Main.exe myUsername myPassword");
+        if (!ensureArgs(args)) { return; }
+
+        try{
+            BasicDataSource ds = getBasicDataSource(args);
+
+            DataManager dm = new DataManager(ds);
+
+            SakilaConsoleApp app = new SakilaConsoleApp(dm);
+
+            app.start();
+
+        } catch (Exception e) {
+            System.out.println("There was a SQL exception: "+ e.getMessage());
         }
 
-        String username = args[0];
-        String password = args[1];
-        String URL = args[2];
 
 
 
@@ -37,34 +45,29 @@ public class Main {
 
     }
 
-    private static BasicDataSource getBasicDataSource(){
+    private static BasicDataSource getBasicDataSource(String username, String password, String URL){
         BasicDataSource basicDataSource = new BasicDataSource();
         basicDataSource.setUrl(URL);
         basicDataSource.setUsername(username);
         basicDataSource.setPassword(password);
+
+        return basicDataSource;
     }
 
-//    private static List<Category> getAllCategories(BasicDataSource ds) throws SQLException {
-//
-//        List<Category> categories = new ArrayList<>();
-//        String query = """
-//                    SELECT
-//                    category_id,
-//                    name
-//                    FROM category""";
-//        try(
-//                Connection connection = ds.getConnection();
-//                PreparedStatement statement = connection.prepareStatement(query);
-//                ResultSet results = statement.executeQuery();
-//        ){
-//            while(results.next()){
-//                int categoryID = results.getInt("category_id");
-//                String categoryName = results.getString("name");
-//
-//                Category category = new Category(categoryID, categoryName);
-//                categories.add(category);
-//            }
-//        }
-//        return categories;
-//    }
+    private static BasicDataSource getBasicDataSource(String[] args){
+        String username = args[0];
+        String password = args[1];
+        String URL = args[2];
+        return getBasicDataSource(username, password, URL);
+    }
+
+    private static boolean ensureArgs(String[] args){
+        if(args.length < 3){
+            System.out.println("You need to provide a username, password and URL when running this command.");
+            System.out.println("For example:");
+            System.out.println("Main.exe myUsername myPassword");
+            return false;
+        }
+        return true;
+    }
 }
