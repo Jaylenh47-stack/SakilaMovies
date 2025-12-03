@@ -1,5 +1,6 @@
 package persistance;
 
+import models.Actor;
 import models.Category;
 import org.apache.commons.dbcp2.BasicDataSource;
 
@@ -40,5 +41,64 @@ public class DataManager {
         }
         return categories;
     }
+
+    public List<Actor> getActorsByLastName(String lastNameSearch) throws SQLException {
+        List<Actor> actors = new ArrayList<>();
+
+        try(
+                Connection connection = ds.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(
+                        "SELECT actor_id, first_name, last_name FROM actor WHERE last_name = ?")
+        ) {
+
+            preparedStatement.setString(1, lastNameSearch);
+
+            try (ResultSet results = preparedStatement.executeQuery()) {
+
+
+                    while (results.next()) {
+                        int actorID = results.getInt("actor_id");
+                        String firstName = results.getString("first_name");
+                        String lastName = results.getString("last_name");
+
+                        Actor a = new Actor(actorID, firstName, lastName);
+                        actors.add(a);
+                    }
+
+            }
+        }
+        return actors;
+    }
+
+    public List<Actor> getActorByFullName(String firstNameSearch, String lastNameSearch) throws SQLException {
+        List<Actor> actors = new ArrayList<>();
+
+        try(
+                Connection connection = ds.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(
+                        "SELECT actor_id, first_name, last_name FROM actor WHERE first_name = ? && last_name = ?")
+            ){
+
+            preparedStatement.setString(1, firstNameSearch);
+            preparedStatement.setString(2, lastNameSearch);
+
+            try(ResultSet results = preparedStatement.executeQuery()) {
+
+
+                while (results.next()) {
+                    int actorID = results.getInt("actor_id");
+                    String firstName = results.getString("first_name");
+                    String lastName = results.getString("last_name");
+
+
+                    Actor a = new Actor(actorID, firstName, lastName);
+                    actors.add(a);
+                }
+            }
+        }
+        return actors;
+    }
+
 }
+
 

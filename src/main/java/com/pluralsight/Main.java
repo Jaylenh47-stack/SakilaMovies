@@ -35,14 +35,6 @@ public class Main {
         }
 
 
-
-
-
-
-
-
-
-
     }
 
     private static BasicDataSource getBasicDataSource(String username, String password, String URL){
