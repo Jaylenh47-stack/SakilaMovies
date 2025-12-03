@@ -2,6 +2,7 @@ package userinterface;
 
 import models.Actor;
 import models.Category;
+import models.Film;
 import org.apache.commons.dbcp2.BasicDataSource;
 import persistance.DataManager;
 
@@ -55,15 +56,22 @@ public class SakilaConsoleApp {
             //If there is a matching actor print it
            if (!actors.isEmpty()){
                actors.forEach(System.out::println);
+               System.out.println();
 
                //Ask user for first and last name of an actor they would like to see films from
                System.out.println("Enter full name of an actor to see all films they are in");
                String firstName = ConsoleHelper.promptForString("First Name");
                String lastName2 = ConsoleHelper.promptForString("Last Name");
 
-               //Display actor(s)
-               List<Actor> actors2 = dm.getActorByFullName(firstName, lastName2);
-               actors2.forEach(System.out::println);
+               //Display actor
+               List<Actor> actor = dm.getActorByFullName(firstName, lastName2);
+               System.out.println(actor);
+               System.out.println(lastName2);
+
+               //List films from actor
+               List<Film> films = dm.getFilmsByActor(firstName, lastName2);
+               films.forEach(System.out::println);
+
            }
            else{
                System.out.println("No actors found");

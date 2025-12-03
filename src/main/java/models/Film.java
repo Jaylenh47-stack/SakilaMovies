@@ -48,11 +48,6 @@ public class Film {
 
     @Override
     public String toString() {
-        return "Film{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", length=" + length +
-                ", rating='" + rating + '\'' +
-                '}';
+        return String.format("%-10d %-25s %-10d %-10s ",this.id, this.title, this.length, this.rating);
     }
 }

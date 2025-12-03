@@ -2,6 +2,7 @@ package persistance;
 
 import models.Actor;
 import models.Category;
+import models.Film;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.sql.Connection;
@@ -84,12 +85,10 @@ public class DataManager {
 
             try(ResultSet results = preparedStatement.executeQuery()) {
 
-
-                while (results.next()) {
+                while(results.next()) {
                     int actorID = results.getInt("actor_id");
                     String firstName = results.getString("first_name");
                     String lastName = results.getString("last_name");
-
 
                     Actor a = new Actor(actorID, firstName, lastName);
                     actors.add(a);
@@ -98,6 +97,37 @@ public class DataManager {
         }
         return actors;
     }
+
+    public List<Film> getFilmsByActor(String firstNameSearch, String lastNameSearch) throws SQLException {
+        List<Film> films = new ArrayList<>();
+
+        try(
+                Connection connection = ds.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(
+                        "SELECT film.film_id, title, length, rating FROM film JOIN film_actor ON film.film_id = film_actor.film_id" +
+                                " JOIN actor ON film_actor.actor_id = actor.actor_id WHERE first_name = ? && last_name = ? ")
+        ){
+            preparedStatement.setString(1, firstNameSearch);
+            preparedStatement.setString(2, lastNameSearch);
+
+            try(ResultSet results = preparedStatement.executeQuery()){
+
+                while(results.next()){
+                    int filmID = results.getInt("film.film_id");
+                    String title = results.getString("title");
+                    int length = results.getInt("length");
+                    String rating = results.getString("rating");
+
+                    Film f = new Film(filmID, title, length, rating);
+                    films.add(f);
+                }
+            }
+        }
+        return films;
+    }
+
+
+
 
 }
 
